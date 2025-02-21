@@ -8,7 +8,9 @@ import {
 } from "fastify-type-provider-zod";
 import { fastifySwagger } from "@fastify/swagger";
 import { fastifySwaggerUi } from "@fastify/swagger-ui";
-import { routes } from "./routes";
+import routes from "./routes";
+import "dotenv/config";
+import redisDbConnect from "./config/redis";
 
 const app = fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -37,8 +39,10 @@ app.register(routes);
 
 app
   .listen({
-    port: 3333,
+    port: 4005,
+    host: "0.0.0.0",
   })
-  .then(() => {
-    console.log("HTTP server running on http://localhost:3333");
+  .then(async () => {
+    await redisDbConnect();
+    console.log("HTTP server running on 4002");
   });

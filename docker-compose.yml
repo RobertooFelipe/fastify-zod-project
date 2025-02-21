@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  redis-service:
+    image: redis
+    container_name: redis-service
+    ports:
+      - "6379:6379"
+    logging:
+      driver: none
+
+  server_service:
+    build:
+      context: .
+      target: development  # Usando o target de desenvolvimento
+    volumes:
+      - .:/app  # Monta o código fonte do host dentro do container
+      - /app/node_modules  # Evita conflitos nos módulos
+    # command: ["pnpm", "dev"]  # Usar ts-node-dev para desenvolvimento
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "4002:4002"
