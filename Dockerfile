@@ -1,4 +1,4 @@
-# Base image
+# --- Base Image ---
 FROM node:20-alpine AS base
 
 WORKDIR /app
@@ -9,36 +9,20 @@ RUN npm install -g pnpm@latest
 # Copia package.json e pnpm-lock.yaml
 COPY package.json pnpm-lock.yaml ./
 
-# Instala as dependências
+# Instala TODAS as dependências (incluindo dev)
 RUN pnpm install --frozen-lockfile
 
-# --- Target para Desenvolvimento ---
+
+# --- Development Stage ---
 FROM base AS development
 
 WORKDIR /app
 
-# Copia o código da aplicação
+# Copia o código-fonte da aplicação
 COPY . .
 
-# Instala dependências de desenvolvimento (se necessário)
-RUN pnpm install --frozen-lockfile
+# Exponha a porta (caso seja necessário)
+EXPOSE ${PORT}
 
-# Comando para rodar em modo de desenvolvimento (com ts-node-dev)
+# Usa pnpm dev para rodar em modo desenvolvimento
 CMD ["pnpm", "dev"]
-
-# --- Target para Produção ---
-FROM base AS production
-
-WORKDIR /app
-
-# Copia todo o código, mas não os arquivos de desenvolvimento
-COPY . .
-
-# Executa o build para gerar o dist
-RUN pnpm build
-
-# Exponha a porta
-EXPOSE 3000
-
-# Comando para rodar a aplicação em produção
-CMD ["node", "dist/server.js"]

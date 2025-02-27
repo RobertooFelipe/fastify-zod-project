@@ -12,12 +12,12 @@ services:
   server_service:
     build:
       context: .
-      target: production  # Usando o target de desenvolvimento
+      dockerfile: ./DockerfileProd
     volumes:
       - .:/app  # Monta o código fonte do host dentro do container
       - /app/node_modules  # Evita conflitos nos módulos
-    # command: ["node", "dist/server.js"]
+      - /app/dist  # Evita conflitos nos módulos
     environment:
       - NODE_ENV=production
     ports:
-      - "4002:4002"
+      - "${PORT}:${PORT}"

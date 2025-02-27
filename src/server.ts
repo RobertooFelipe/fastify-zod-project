@@ -39,10 +39,10 @@ app.register(routes);
 
 app
   .listen({
-    port: 4005,
+    port: parseInt(process.env.PORT || "4002", 10),
     host: "0.0.0.0",
   })
   .then(async () => {
-    await redisDbConnect();
-    console.log("HTTP server running on 4002");
+    // await redisDbConnect();
+    console.log(`➡️  HTTP server running on ${process.env.PORT || 4002}`);
   });

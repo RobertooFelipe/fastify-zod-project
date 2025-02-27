@@ -1,0 +1,42 @@
+# --- Build Stage ---
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Instala o pnpm globalmente
+RUN npm install -g pnpm@latest
+
+# Copia package.json e pnpm-lock.yaml
+COPY package.json pnpm-lock.yaml ./
+
+# Instala todas as dependências (produção + desenvolvimento)
+RUN pnpm install --frozen-lockfile
+
+# Copia o código fonte
+COPY . .
+
+# Executa o build
+RUN pnpm build
+
+# Remove dependências de desenvolvimento para otimizar a imagem final
+RUN pnpm prune --prod
+
+
+# --- Runtime Stage ---
+FROM node:20-alpine AS runtime
+
+WORKDIR /app
+
+# Copia apenas os arquivos necessários do estágio de build
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package.json ./package.json
+
+# Define a variável de ambiente para produção
+ENV NODE_ENV=production
+
+# Exponha a porta
+EXPOSE ${PORT}
+
+# Comando para rodar a aplicação em produção
+CMD ["node", "dist/server.js"]

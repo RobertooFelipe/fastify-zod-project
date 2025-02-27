@@ -16,8 +16,7 @@ services:
     volumes:
       - .:/app  # Monta o código fonte do host dentro do container
       - /app/node_modules  # Evita conflitos nos módulos
-    # command: ["pnpm", "dev"]  # Usar ts-node-dev para desenvolvimento
     environment:
       - NODE_ENV=development
     ports:
-      - "4002:4002"
+      - "${PORT}:${PORT}"
